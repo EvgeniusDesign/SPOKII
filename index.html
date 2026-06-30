@@ -1541,10 +1541,90 @@
         @media (max-width: 520px) {
             .hero__actions { flex-direction: row; }
         }
+
+        #preloader {
+            position: fixed;
+            inset: 0;
+            background: #1a1715;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+        #preloader.slide-up {
+            transform: translateY(-100%);
+            pointer-events: none;
+        }
+        #preloader__logo {
+            font-family: 'DrukCyr', sans-serif;
+            font-size: clamp(36px, 8vw, 88px);
+            color: #f5f0ea;
+            letter-spacing: 0.06em;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: preloader-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.15s forwards;
+        }
+        #preloader__bar {
+            position: absolute;
+            bottom: 24px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: rgba(245,240,234,0.12);
+            overflow: hidden;
+            opacity: 0;
+            animation: preloader-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+        }
+        #preloader__bar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #f5f0ea;
+            transform: translateX(-100%);
+            animation: preloader-line 1.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s infinite;
+        }
+        #preloader__inner {
+            display: contents;
+        }
+        @media (max-width: 768px) {
+            #preloader__inner {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                width: fit-content;
+            }
+            #preloader__bar {
+                position: static;
+                width: 100%;
+                height: 2px;
+                margin-top: 16px;
+                left: unset;
+                right: unset;
+                bottom: unset;
+            }
+        }
+        @keyframes preloader-in {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes preloader-line {
+            0%   { transform: translateX(-100%); }
+            50%  { transform: translateX(0%); }
+            100% { transform: translateX(100%); }
+        }
     </style>
 </head>
 
 <body>
+
+    <div id="preloader">
+        <div id="preloader__inner">
+            <div id="preloader__logo">SPOKII</div>
+            <div id="preloader__bar"></div>
+        </div>
+    </div>
+
 
     <!-- ============ NAV ============ -->
     <nav class="nav" id="nav">
@@ -2692,6 +2772,31 @@
                         hint.style.color = '';
                     }
                 });
+            });
+        })();
+
+        /* ---- Preloader ---- */
+        gsap.globalTimeline.pause();
+        (function() {
+            const preloader = document.getElementById('preloader');
+            const video = document.querySelector('.hero__media video');
+            if (!preloader) return;
+
+            const minTime = new Promise(r => setTimeout(r, 1500));
+            const videoReady = new Promise(r => {
+                if (!video) return r();
+                if (video.readyState >= 3) return r();
+                video.addEventListener('canplay', r, { once: true });
+                setTimeout(r, 4000);
+            });
+
+            Promise.all([minTime, videoReady]).then(() => {
+                preloader.classList.add('slide-up');
+                setTimeout(() => {
+                    preloader.remove();
+                    gsap.globalTimeline.resume();
+                    ScrollTrigger.refresh();
+                }, 900);
             });
         })();
     </script>
