@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOKII — Масажна студія</title>
+
+
+    <style>
+        /* =========================================
+           DESIGN TOKENS
+        ========================================= */
+        :root {
+            --bg:          #F0E8DC;
+            --bg-alt:      #E5DDD1;
+            --bg-dark:     #1A1310;
+            --ink:         #1A1310;
+            --ink-soft:    #7A6558;
+            --ink-muted:   #A89688;
+            --accent:      #C4905F;
+            --white:       #FAF6F0;
+
+            --ease-out:    cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+            --r-sm: 8px;
+            --r-md: 20px;
+            --r-lg: 36px;
+        }
+
+        /* =========================================
+           RESET
+        ========================================= */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: auto; }
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-weight: 300;
+            background: var(--bg);
+            color: var(--ink);
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* =========================================
+           FONTS
+        ========================================= */
+
+        /* =========================================
+           SCROLLBAR
+        ========================================= */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--ink-muted); border-radius: 3px; }
+
+        /* =========================================
+           UTILITY
+        ========================================= */
+        .container {
+            max-width: 1240px;
+            margin: 0 auto;
+            padding: 0 48px;
+        }
+
+        .eyebrow {
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+        }
+
+        /* =========================================
+           NAV
+        ========================================= */
+        .nav {
+            position: fixed;
+            inset: 0 0 auto 0;
+            z-index: 102;
+            padding: 32px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.7s var(--ease-out),
+                        backdrop-filter 0.7s var(--ease-out),
+                        padding 0.5s var(--ease-out);
+        }
+
+        .nav.scrolled {
+            background: rgba(240, 232, 220, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 20px 48px;
+        }
+
+        .nav__brand {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--white);
+            transition: color 0.5s;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .nav.scrolled .nav__brand { color: var(--ink); }
+
+        .nav__links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .nav__links a {
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: rgba(250,246,240,0.92);
+            position: relative;
+            transition: color 0.3s;
+        }
+        .nav__links a::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: currentColor;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .nav__links a:hover::after { transform: scaleX(1); }
+        .nav.scrolled .nav__links a { color: var(--ink); }
+        .nav.scrolled .nav__links a:hover { color: var(--ink); }
+
+        .nav__right {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .nav__phone {
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            color: rgba(250,246,240,0.92);
+            transition: color 0.3s;
+        }
+        .nav__phone:hover { color: var(--white); }
+        .nav.scrolled .nav__phone { color: var(--ink); }
+        .nav.scrolled .nav__phone:hover { color: var(--ink); }
+
+        .nav__cta {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--white);
+            border: 1px solid rgba(250,246,240,0.35);
+            padding: 11px 24px;
+            border-radius: 100px;
+            transition: all 0.4s var(--ease-out);
+        }
+        .nav__cta:hover { background: rgba(250,246,240,0.15); }
+        .nav.scrolled .nav__cta {
+            color: var(--ink);
+            border-color: rgba(26,19,16,0.25);
+        }
+        .nav.scrolled .nav__cta:hover {
+            background: var(--ink);
+            color: var(--white);
+            border-color: var(--ink);
+        }
+
+        .nav__burger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 4px;
+            width: 32px;
+            height: 32px;
+        }
+        .nav__burger span {
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: var(--white);
+            transition: transform 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+            transform-origin: center;
+        }
+        .nav.scrolled .nav__burger span { background: var(--ink); }
+        .nav__burger.open span:first-child { transform: translateY(3.75px) rotate(45deg); }
+        .nav__burger.open span:last-child  { transform: translateY(-3.75px) rotate(-45deg); }
+
+        /* ---- Mobile Menu ---- */
+        .mobile-menu {
+            position: fixed;
+            inset: 0;
+            z-index: 101;
+            background: #1A1310;
+            display: flex;
+            flex-direction: column;
+            padding-top: 80px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+        }
+        .mobile-menu.open { opacity: 1; pointer-events: all; }
+
+        .mobile-menu__nav {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 24px;
+        }
+        .mobile-menu__item {
+            border-top: 1px solid rgba(250,246,240,0.08);
+            padding: 18px 0;
+            transform: translateY(16px);
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94),
+                        opacity 0.5s;
+        }
+        .mobile-menu__item:last-child { border-bottom: 1px solid rgba(250,246,240,0.08); }
+        .mobile-menu.open .mobile-menu__item { transform: translateY(0); opacity: 1; }
+        .mobile-menu.open .mobile-menu__item:nth-child(1) { transition-delay: 0.06s; }
+        .mobile-menu.open .mobile-menu__item:nth-child(2) { transition-delay: 0.12s; }
+        .mobile-menu.open .mobile-menu__item:nth-child(3) { transition-delay: 0.18s; }
+        .mobile-menu.open .mobile-menu__item:nth-child(4) { transition-delay: 0.24s; }
+        .mobile-menu__item a {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(30px, 8.5vw, 40px);
+            font-weight: 200;
+            letter-spacing: -0.02em;
+            color: rgba(250,246,240,0.88);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .mobile-menu__item a:hover { color: var(--white); }
+
+        .mobile-menu__bottom {
+            padding: 24px 24px 48px;
+            border-top: 1px solid rgba(250,246,240,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex-shrink: 0;
+            transform: translateY(16px);
+            opacity: 0;
+            transition: transform 0.5s 0.28s cubic-bezier(0.25,0.46,0.45,0.94),
+                        opacity 0.5s 0.28s;
+        }
+        .mobile-menu.open .mobile-menu__bottom { transform: translateY(0); opacity: 1; }
+
+        .mobile-menu__cta-btn {
+            display: block;
+            text-align: center;
+            padding: 16px;
+            background: rgba(250,246,240,0.95);
+            color: var(--ink);
+            border-radius: 100px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-decoration: none;
+        }
+        .mobile-menu__address {
+            font-style: normal;
+            font-size: 13px;
+            font-weight: 300;
+            color: rgba(250,246,240,0.35);
+            letter-spacing: 0.01em;
+            text-align: center;
+        }
+        .mobile-menu__footer-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mobile-menu__phone {
+            font-size: 13px;
+            font-weight: 300;
+            color: rgba(250,246,240,0.5);
+            text-decoration: none;
+            letter-spacing: 0.01em;
+        }
+        .mobile-menu__socials {
+            display: flex;
+            gap: 10px;
+        }
+        .mobile-menu__social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border: 1px solid rgba(250,246,240,0.15);
+            border-radius: 50%;
+        }
+        .mobile-menu__social svg {
+            width: 18px;
+            height: 18px;
+            fill: rgba(250,246,240,0.6);
+        }
+
+        /* =========================================
+           HERO
+        ========================================= */
+        .hero {
+            position: relative;
+            width: 100%;
+            min-height: 100dvh;
+            overflow: hidden;
+        }
+
+        .hero__media {
+            position: absolute;
+            inset: 0;
+            background: var(--bg-dark);
+        }
+
+        .hero__media img,
+        .hero__media video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 25%;
+        }
+
+        /* grain overlay */
+        .hero__media::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            background-size: 160px 160px;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        .hero__overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(15, 9, 6, 0.80) 0%,
+                rgba(15, 9, 6, 0.28) 45%,
+                rgba(15, 9, 6, 0.08) 100%
+            );
+        }
+
+        /* content: bottom-left anchor */
+        .hero__content {
+            position: absolute;
+            bottom: 80px;
+            left: 64px;
+            right: 64px;
+        }
+
+        .hero__eyebrow {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.24em;
+            text-transform: uppercase;
+            color: rgba(250,246,240,0.5);
+            margin-bottom: 22px;
+            opacity: 0;
+        }
+
+        .hero__title {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(44px, 6.2vw, 80px);
+            font-weight: 200;
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+            color: var(--white);
+            margin-bottom: 22px;
+        }
+
+        /* char-split reveal */
+        .tl { display: block; white-space: nowrap; }
+
+        /* line-split reveal */
+        .lw { display: block; overflow: hidden; }
+        .li { display: block; }
+        .tw {
+            display: inline-block;
+            overflow: hidden;
+            line-height: 1;
+            padding-bottom: 0.1em;
+            margin-bottom: -0.1em;
+        }
+        .tc { display: inline-block; }
+        .tw-s { display: inline-block; width: 0.28em; }
+
+        .hero__title .tl,
+        .services__quote .tl,
+        .section-head h2 .tl,
+        .masters__head h2 .tl,
+        .reviews__head h2 .tl,
+        .cta-final__title .tl {
+            margin-bottom: -0.08em;
+        }
+
+        .hero__sub {
+            font-size: 15px;
+            font-weight: 300;
+            line-height: 1.75;
+            letter-spacing: 0.02em;
+            color: rgba(250,246,240,0.88);
+            max-width: 440px;
+            margin-bottom: 36px;
+            opacity: 0;
+        }
+
+        .hero__actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            opacity: 0;
+        }
+
+        .hero__scroll-hint {
+            position: absolute;
+            bottom: 40px;
+            right: 64px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            opacity: 0;
+        }
+
+        .hero__scroll-line {
+            width: 44px;
+            height: 1px;
+            background: rgba(250,246,240,0.3);
+        }
+
+        .hero__scroll-text {
+            font-size: 9px;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(250,246,240,0.4);
+        }
+
+        /* =========================================
+           BUTTONS
+        ========================================= */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 15px 30px;
+            border-radius: 100px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.95s var(--ease-out);
+        }
+
+        .btn--light {
+            background: var(--white);
+            color: var(--ink);
+        }
+        .btn--light:hover {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .btn--ghost-light {
+            background: transparent;
+            color: rgba(250,246,240,0.75);
+            border: 1px solid rgba(250,246,240,0.28);
+        }
+        .btn--ghost-light:hover {
+            background: rgba(250,246,240,0.10);
+            color: var(--white);
+            border-color: rgba(250,246,240,0.55);
+        }
+
+        .btn--dark {
+            background: var(--ink);
+            color: var(--white);
+        }
+        .btn--dark:hover {
+            background: var(--accent);
+        }
+
+        .btn--ghost-dark {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid rgba(26,19,16,0.22);
+        }
+        .btn--ghost-dark:hover {
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .btn--on-accent {
+            background: var(--white);
+            color: var(--ink);
+        }
+        .btn--on-accent:hover {
+            background: var(--ink);
+            color: var(--white);
+        }
+
+        .btn--outline-accent {
+            background: transparent;
+            color: rgba(250,246,240,0.8);
+            border: 1px solid rgba(250,246,240,0.28);
+        }
+        .btn--outline-accent:hover {
+            background: rgba(250,246,240,0.1);
+            color: var(--white);
+        }
+
+        /* =========================================
+           PHILOSOPHY
+        ========================================= */
+        .philosophy {
+            padding: 160px 0 140px;
+        }
+
+        .philosophy__inner {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .philosophy__side {
+            padding-top: 6px;
+        }
+
+        .philosophy__num {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 96px;
+            font-weight: 200;
+            line-height: 1;
+            color: var(--bg-alt);
+            letter-spacing: -0.03em;
+            margin-top: 8px;
+            user-select: none;
+        }
+
+        .philosophy__quote {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(32px, 3.8vw, 52px);
+            font-weight: 200;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+        }
+
+        .philosophy__body {
+            margin-top: 36px;
+            font-size: 15px;
+            font-weight: 300;
+            line-height: 1.85;
+            letter-spacing: 0.02em;
+            color: #3D2E26;
+            max-width: 540px;
+        }
+
+        /* =========================================
+           SERVICES
+        ========================================= */
+        .services {
+            padding: 0 0 160px;
+        }
+
+        .services__header {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100dvh;
+            margin-bottom: 120px;
+            overflow: hidden;
+        }
+
+
+        .services__header .eyebrow {
+            margin-bottom: 28px;
+        }
+
+        .services__quote {
+            font-size: clamp(36px, 4.4vw, 62px);
+            font-weight: 200;
+            line-height: 1.0;
+            letter-spacing: -0.02em;
+            color: var(--ink);
+            max-width: 760px;
+            margin-bottom: 24px;
+        }
+
+        .services__lead {
+            font-size: 15px;
+            font-weight: 300;
+            line-height: 1.85;
+            letter-spacing: 0.02em;
+            color: #3D2E26;
+            max-width: 520px;
+        }
+
+        .services__text {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hand-cover {
+            position: absolute;
+            width: 18.7vw;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .section-head {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 56px;
+        }
+
+        .section-head h2 {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(38px, 5vw, 64px);
+            font-weight: 200;
+            line-height: 0.92;
+            letter-spacing: -0.025em;
+        }
+
+        .services__grid {
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid rgba(26,19,16,0.1);
+        }
+
+        .service-card {
+            display: grid;
+            grid-template-columns: 2fr 3fr;
+            border-bottom: 1px solid rgba(26,19,16,0.1);
+            background: transparent;
+            border-radius: 6px;
+            padding: 0;
+            overflow: hidden;
+            transition: none;
+        }
+
+        .service-card:hover { transform: none; }
+        .service-card--dark { background: transparent; }
+
+        /* Photo */
+        .service-card__img {
+            position: relative;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+            padding: 0;
+            flex-shrink: 0;
+        }
+
+        .service-card__img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top,
+                rgba(8,5,3,0.78) 0%,
+                rgba(8,5,3,0.22) 48%,
+                transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .service-card__img img {
+            width: 100%;
+            height: 115%;
+            margin-top: -7.5%;
+            object-fit: cover;
+            display: block;
+            border-radius: 0;
+        }
+
+        /* Title overlaid on photo bottom-left */
+        .service-card__label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            padding: 28px 32px;
+            z-index: 2;
+        }
+
+        .service-card__index {
+            display: block;
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.18em;
+            color: rgba(250,246,240,0.48);
+            margin-bottom: 8px;
+        }
+
+        .service-card__name {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(22px, 2.2vw, 30px);
+            font-weight: 200;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            margin-bottom: 0;
+        }
+
+        /* Body: right side */
+        .service-card__body {
+            padding: 44px 56px 44px 52px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+
+        .service-card--dark .service-card__body {
+            background: var(--ink);
+        }
+
+        .service-card__desc {
+            font-size: clamp(18px, 1.7vw, 24px);
+            font-weight: 300;
+            line-height: 1.35;
+            letter-spacing: 0.01em;
+            color: var(--ink);
+            flex: 1;
+            margin-bottom: 40px;
+        }
+
+        .service-card--dark .service-card__desc { color: rgba(250,246,240,0.88); }
+
+        .service-card__prices {
+            border-top: 1px solid rgba(26,19,16,0.09);
+            padding-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .service-card--dark .service-card__prices { border-color: rgba(250,246,240,0.12); }
+
+        .service-card__row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .service-card__dur {
+            font-size: 14px;
+            color: var(--ink-soft);
+        }
+
+        .service-card--dark .service-card__dur { color: rgba(250,246,240,0.58); }
+
+        .service-card__price {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .service-card--dark .service-card__price { color: var(--accent); }
+
+        .service-card--accent .service-card__body { background: var(--accent); }
+        .service-card--accent .service-card__desc { color: rgba(250,246,240,0.92); }
+        .service-card--accent .service-card__prices { border-color: rgba(250,246,240,0.18); }
+        .service-card--accent .service-card__dur { color: rgba(250,246,240,0.65); }
+        .service-card--accent .service-card__price { color: var(--white); }
+
+        .sc-btn { margin-top: 28px; align-self: flex-start; }
+
+        /* First card — hidden initial states */
+        .service-card--first .service-card__img  { clip-path: inset(0% 0% 100% 0%); }
+        .service-card--first .service-card__body { clip-path: inset(0% 0% 100% 0%); }
+        .service-card--first .service-card__prices,
+        .service-card--first .sc-btn { opacity: 0; transform: translateY(12px); }
+
+
+        /* =========================================
+           GALLERY SECTION
+        ========================================= */
+        .gallery-section {
+            height: 260vh;
+            position: relative;
+        }
+
+        .gallery-section__pin {
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .gallery-section__head {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            transform: translateY(-24px);
+        }
+
+        .gallery-section__eyebrow {
+            display: block;
+            font-size: 11px;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 20px;
+        }
+
+        .gallery-section__title {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(44px, 6.5vw, 88px);
+            font-weight: 200;
+            line-height: 0.9;
+            letter-spacing: -0.025em;
+            color: var(--ink);
+            text-align: center;
+        }
+
+        /* Reel: slides up from below */
+        .gallery-section__reel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 5;
+        }
+
+        .gallery-section__track {
+            display: flex;
+            gap: 16px;
+            will-change: transform;
+        }
+
+        .gallery-section__slide {
+            width: 70vw;
+            flex-shrink: 0;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        /* Minimalist slider arrows */
+        .gallery-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 20;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(250,246,240,0.35);
+            background: rgba(0,0,0,0.15);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #FAF6F0;
+            transition: border-color 0.3s, background 0.3s, opacity 0.3s;
+            padding: 0;
+        }
+        .gallery-btn:hover {
+            border-color: rgba(250,246,240,0.7);
+            background: rgba(0,0,0,0.3);
+        }
+        .gallery-btn--prev { left: calc(15vw + 20px); }
+        .gallery-btn--next { right: calc(15vw + 20px); }
+        .gallery-btn.is-disabled { opacity: 0.2; pointer-events: none; }
+
+        .gallery-section__slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* =========================================
+           MASTERS
+        ========================================= */
+        .masters {
+            padding: 120px 0 160px;
+        }
+
+        .masters__head {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+            margin-bottom: 60px;
+        }
+
+        .masters__head h2 {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(38px, 4.5vw, 58px);
+            font-weight: 200;
+            line-height: 0.92;
+            letter-spacing: -0.025em;
+        }
+
+        .masters__sub {
+            font-size: 16px;
+            font-weight: 300;
+            line-height: 1.85;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+            padding-top: 56px;
+        }
+
+        .masters__grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .master-card {
+            background: var(--bg-alt);
+            border-radius: 6px;
+            overflow: hidden;
+            padding: 5px 5px 0;
+        }
+
+        .master-card__photo {
+            width: 100%;
+            aspect-ratio: 3/4;
+            overflow: hidden;
+            border-radius: 3px;
+        }
+
+        .master-card__photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.9s var(--ease-out);
+        }
+
+
+        .master-card__info {
+            padding: 16px 14px 20px;
+        }
+
+        .master-card__name {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(14px, 1.2vw, 17px);
+            font-weight: 400;
+            letter-spacing: 0em;
+            line-height: 1.2;
+            color: var(--ink);
+            margin-bottom: 8px;
+        }
+
+        .master-card__bio {
+            font-size: 13px;
+            font-weight: 300;
+            line-height: 1.6;
+            letter-spacing: 0.01em;
+            color: #3D2E26;
+        }
+
+        /* =========================================
+           REVIEWS
+        ========================================= */
+        .reviews {
+            padding: 0 0 160px;
+        }
+
+        .reviews__head {
+            text-align: center;
+            margin-bottom: 52px;
+            padding: 0 48px;
+        }
+
+        .reviews__head .eyebrow {
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .reviews__head h2 {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(38px, 5vw, 64px);
+            font-weight: 200;
+            line-height: 0.92;
+            letter-spacing: -0.025em;
+        }
+
+        .review-card__footer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .review-card__avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid rgba(26,19,16,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--ink-soft);
+            flex-shrink: 0;
+        }
+
+        .reviews__track-wrap {
+            overflow: hidden;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .reviews__track-wrap:active { cursor: grabbing; }
+
+        .reviews__track {
+            display: flex;
+            gap: 14px;
+            will-change: transform;
+            padding: 0 48px;
+        }
+
+        .review-card {
+            background: var(--bg-alt);
+            border-radius: 6px;
+            padding: 36px 30px 32px;
+            width: 336px;
+            flex-shrink: 0;
+        }
+
+        .review-card__stars {
+            display: flex;
+            gap: 3px;
+            margin-bottom: 20px;
+        }
+
+        .review-card__star {
+            width: 13px;
+            height: 13px;
+            background: var(--accent);
+            clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+        }
+
+        .review-card__quote {
+            font-size: 14px;
+            font-weight: 300;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+            color: var(--ink);
+            margin-bottom: 24px;
+        }
+
+        .review-card__author {
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--ink-muted);
+        }
+
+        /* =========================================
+           FINAL CTA
+        ========================================= */
+        .cta-final {
+            padding: 0 0 120px;
+        }
+
+        .cta-final__inner {
+            background: var(--bg-dark);
+            border-radius: 6px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: stretch;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-final__photo {
+            position: relative;
+            overflow: hidden;
+            min-height: 520px;
+        }
+
+        .cta-final__photo img,
+        .cta-final__photo video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .cta-final__right {
+            padding: 80px 72px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cta-final__right::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 110% 110%, rgba(196,144,95,0.10) 0%, transparent 55%);
+            pointer-events: none;
+        }
+
+        .cta-final__title {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: clamp(38px, 4.5vw, 60px);
+            font-weight: 200;
+            line-height: 0.92;
+            letter-spacing: -0.025em;
+            color: var(--white);
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .cta-final__body {
+            font-size: 15px;
+            font-weight: 300;
+            line-height: 1.8;
+            color: rgba(250,246,240,0.5);
+            margin-bottom: 36px;
+        }
+
+        /* Form */
+        .cta-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cta-form__grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            column-gap: 28px;
+        }
+
+        .cta-form__field {
+            border-bottom: 1px solid rgba(250,246,240,0.14);
+            padding: 14px 0 12px;
+            margin-bottom: 4px;
+            transition: border-color 0.3s;
+            position: relative;
+        }
+
+        .cta-form__hint {
+            position: absolute;
+            top: 14px;
+            left: 0;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            color: rgba(250,246,240,0.32);
+            pointer-events: none;
+            display: none;
+        }
+
+        .cta-form__field input[type="date"] ~ .cta-form__hint,
+        .cta-form__field input[type="time"] ~ .cta-form__hint {
+            display: block;
+        }
+
+        .cta-form__field input[type="date"],
+        .cta-form__field input[type="time"] {
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .cta-form__field input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+        }
+
+        .cta-time-select {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            color: rgba(250,246,240,0.32);
+            -webkit-text-fill-color: rgba(250,246,240,0.32);
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .cta-time-select.has-value {
+            color: rgba(250,246,240,0.55);
+            -webkit-text-fill-color: rgba(250,246,240,0.55);
+        }
+
+        .cta-form__field:focus-within {
+            border-color: rgba(250,246,240,0.45);
+        }
+
+        .cta-form__field input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            color: var(--white);
+            caret-color: var(--accent);
+        }
+
+        .cta-form__field input::placeholder {
+            color: rgba(250,246,240,0.32);
+        }
+
+
+        .cta-form__submit {
+            margin-top: 32px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* Social */
+        .cta-social {
+            margin-top: 28px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .cta-social__label {
+            font-size: 12px;
+            font-weight: 300;
+            letter-spacing: 0.03em;
+            color: rgba(250,246,240,0.62);
+        }
+
+        .cta-social__links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cta-social__icon {
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(250,246,240,0.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(250,246,240,0.5);
+            transition: border-color 0.3s, color 0.3s;
+        }
+
+        .cta-social__icon:hover {
+            border-color: rgba(250,246,240,0.5);
+            color: var(--white);
+        }
+
+        .cta-social__icon svg {
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+        }
+
+        /* =========================================
+           FOOTER
+        ========================================= */
+        .footer {
+            padding: 64px 0 36px;
+            border-top: 1px solid rgba(26,19,16,0.07);
+        }
+
+        .footer__top {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1.4fr;
+            gap: 60px;
+            padding-bottom: 48px;
+            border-bottom: 1px solid rgba(26,19,16,0.07);
+            margin-bottom: 28px;
+        }
+
+        .footer__brand {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: var(--ink);
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .footer__tagline {
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1.7;
+            color: var(--ink-soft);
+        }
+
+        .footer__col-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--ink-soft);
+            margin-bottom: 18px;
+        }
+
+        .footer__nav {
+            display: flex;
+            flex-direction: column;
+            gap: 11px;
+            list-style: none;
+        }
+
+        .footer__nav a {
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--ink-soft);
+            transition: color 0.3s;
+        }
+        .footer__nav a:hover { color: var(--ink); }
+
+        .footer__contacts {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+        }
+
+        .footer__contact-row a,
+        .footer__contact-row span {
+            font-size: 13px;
+            font-weight: 400;
+            color: var(--ink-soft);
+            transition: color 0.3s;
+            line-height: 1.5;
+        }
+        .footer__contact-row a:hover { color: var(--ink); }
+
+        .footer__socials {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .footer__social-icon {
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(26,19,16,0.18);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink-soft);
+            transition: border-color 0.3s, color 0.3s;
+        }
+
+        .footer__social-icon:hover {
+            border-color: var(--ink);
+            color: var(--ink);
+        }
+
+        .footer__social-icon svg {
+            width: 15px;
+            height: 15px;
+            fill: currentColor;
+        }
+
+        .footer__bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer__credit {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--ink-soft);
+        }
+
+        .footer__copy {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--ink-soft);
+        }
+
+        /* =========================================
+           REVEAL INIT STATES
+        ========================================= */
+        .reveal {
+            opacity: 0;
+            transform: translateY(44px);
+        }
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+        @media (max-width: 1024px) {
+            .masters__head { grid-template-columns: 1fr; gap: 16px; }
+            .philosophy__inner { grid-template-columns: 1fr; gap: 32px; }
+            .philosophy__num { display: none; }
+        }
+
+        @media (max-width: 768px) {
+            .d-br { display: none; }
+            .footer__tagline .d-br { display: block; }
+            .container { padding: 0 20px; }
+
+            /* Nav */
+            .nav { padding: 18px 20px; }
+            .nav.scrolled { padding: 14px 20px; }
+            .nav__links { display: none; }
+            .nav__phone { display: none; }
+            .nav__cta { display: none; }
+            .nav__burger { display: flex; }
+
+            .btn-text-long { display: none; }
+            .hero__actions { display: flex; flex-direction: row; flex-wrap: nowrap; width: 100%; gap: 10px; }
+            .hero__actions .btn { flex: 1 1 0; min-width: 0; justify-content: center; padding: 15px 10px; }
+
+            /* Hero */
+            .hero__content { left: 20px; right: 20px; bottom: 44px; }
+            .hero__title { white-space: normal; font-size: clamp(34px, 10vw, 52px); }
+            .hero__scroll-hint { display: none; }
+            .hero__sub { font-size: 14px; }
+
+            /* Services */
+            .hand-cover { width: 30vw; }
+            .services__text { padding: 0 24px; }
+            .services__lead { max-width: 100%; font-size: 14px; text-wrap: balance; }
+            .services__quote { font-size: clamp(26px, 7.5vw, 36px); }
+            .gallery-section__title { font-size: clamp(32px, 9vw, 44px); }
+            .services__grid { grid-template-columns: 1fr; }
+            .service-card { grid-template-columns: 1fr; }
+            .service-card__img { aspect-ratio: 4/3; }
+            .service-card__label { padding: 20px 24px; }
+            .service-card__name { font-size: 26px; }
+            .service-card__desc { font-size: 16px; }
+            .service-card__body { padding: 28px 24px 32px; justify-content: flex-start; }
+            .service-card--dark .service-card__body { background: var(--ink); }
+            .service-card--accent .service-card__body { background: var(--accent); }
+            .service-card--first .service-card__img { clip-path: none; }
+            .service-card--first .service-card__body { clip-path: none; }
+            .services__header { grid-template-columns: 1fr; column-gap: 0; }
+
+            /* Philosophy */
+            .philosophy { padding: 80px 0 70px; }
+
+            /* Gallery */
+            .gallery-section { height: auto; padding: 80px 0 80px; }
+            .gallery-section__pin { position: static; height: auto; flex-direction: column; align-items: flex-start; justify-content: flex-start; overflow: visible; }
+            .gallery-section__head { position: static; transform: none; pointer-events: auto; width: 100%; padding: 0 24px; margin-bottom: 40px; text-align: center; }
+            .gallery-section__title { color: var(--ink) !important; text-align: center; }
+            .gallery-section__eyebrow { color: var(--ink-soft) !important; }
+            .gallery-section__reel { position: relative; bottom: auto; left: auto; height: calc(86vw * 2 / 3); overflow: hidden; }
+            .gallery-section__slide { aspect-ratio: 3/2; }
+            .gallery-section__slide { width: 86vw; }
+            .gallery-btn { top: 50%; }
+            .gallery-btn--prev { left: 16px; }
+            .gallery-btn--next { right: 16px; }
+
+            /* Masters */
+            .masters { padding: 72px 0 80px; }
+            .masters__head { margin-bottom: 32px; text-align: center; }
+            .masters__sub { padding-top: 4px; font-size: 14px; line-height: 1.55; }
+            .masters__grid { display: flex; grid-template-columns: unset; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 12px; margin: 0 -20px; padding: 0 20px 4px; }
+            .masters__grid::-webkit-scrollbar { display: none; }
+            .master-card { flex: 0 0 75vw; scroll-snap-align: start; }
+
+            /* Space band */
+            .space__band { padding: 52px 24px 48px; flex-direction: column; align-items: flex-start; }
+            .space__sub { text-align: left; max-width: 300px; }
+
+            /* Reviews */
+            .reviews { padding: 0 0 80px; }
+            .reviews__head { padding: 0 20px; }
+            .reviews__track-wrap { overflow-x: auto; scrollbar-width: none; cursor: default; }
+            .reviews__track-wrap::-webkit-scrollbar { display: none; }
+            .reviews__track { padding: 0 20px; }
+            .review-card { width: 80vw; }
+
+            /* Section heads */
+            .section-head { flex-direction: column; align-items: flex-start; gap: 6px; }
+
+            /* CTA */
+            .cta-final { padding: 0 0 60px; }
+            .cta-final__inner { grid-template-columns: 1fr; border-radius: 0; }
+            .cta-final__photo { min-height: 240px; }
+            .cta-final__right { padding: 40px 24px 48px; }
+            .cta-form__grid { grid-template-columns: 1fr; }
+            .cta-form__hint { display: block; }
+            .cta-form__hint.hidden { display: none; }
+
+            /* Footer */
+            .footer { padding: 48px 0 28px; }
+            .footer__top { grid-template-columns: 1fr; gap: 36px; padding-bottom: 36px; margin-bottom: 20px; }
+            .footer__bottom { flex-direction: column; gap: 6px; align-items: flex-start; }
+        }
+
+        @media (max-width: 520px) {
+            .hero__actions { flex-direction: row; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============ NAV ============ -->
+    <nav class="nav" id="nav">
+        <a href="index.html" class="nav__brand">SPOKII</a>
+        <ul class="nav__links">
+            <li><a href="#services-cards">Послуги</a></li>
+            <li><a href="#masters">Майстри</a></li>
+            <li><a href="#gallery">Галерея</a></li>
+            <li><a href="#reviews">Відгуки</a></li>
+        </ul>
+        <div class="nav__right">
+            <a href="tel:+380973456789" class="nav__phone">+38 (097) 345 67 89</a>
+            <a href="#cta" class="nav__cta">Записатися</a>
+            <button class="nav__burger" id="navBurger" aria-label="Меню">
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu" id="mobileMenu">
+        <nav class="mobile-menu__nav">
+            <div class="mobile-menu__item"><a href="#services-cards">Послуги</a></div>
+            <div class="mobile-menu__item"><a href="#masters">Майстри</a></div>
+            <div class="mobile-menu__item"><a href="#gallery">Галерея</a></div>
+            <div class="mobile-menu__item"><a href="#reviews">Відгуки</a></div>
+        </nav>
+
+        <div class="mobile-menu__bottom">
+            <address class="mobile-menu__address">вул. Саксаганського, 72, Київ</address>
+            <a href="#cta" class="mobile-menu__cta-btn">Записатися на сеанс</a>
+            <div class="mobile-menu__footer-row">
+                <a href="tel:+380973456789" class="mobile-menu__phone">+38 (097) 345 67 89</a>
+                <div class="mobile-menu__socials">
+                    <a href="#" class="mobile-menu__social" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+                    </a>
+                    <a href="#" class="mobile-menu__social" aria-label="Telegram">
+                        <svg viewBox="0 0 24 24"><path d="M16.114,9.291c.552-.552,1.1-1.84-1.2-.276-3.268,2.255-6.489,4.372-6.489,4.372a2.7,2.7,0,0,1-2.117.046c-1.38-.414-2.991-.966-2.991-.966s-1.1-.691.783-1.427c0,0,7.961-3.267,10.722-4.418,1.058-.46,4.647-1.932,4.647-1.932s1.657-.645,1.519.92c-.046.644-.414,2.9-.782,5.338-.553,3.451-1.151,7.225-1.151,7.225s-.092,1.058-.874,1.242a3.787,3.787,0,0,1-2.3-.828c-.184-.138-3.451-2.209-4.648-3.221a.872.872,0,0,1,.046-1.473C12.939,12.375,14.918,10.488,16.114,9.291Z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============ HERO ============ -->
+    <!--
+        Розмісти фото (або відео) тут:
+        Зображення → Cases/spokii/images/hero.jpg
+        Відео      → Cases/spokii/images/hero.mp4
+    -->
+    <section class="hero" id="hero">
+        <div class="hero__media">
+            <video autoplay muted loop playsinline poster="images/hero.png">
+                <source media="(max-width: 768px)" src="videos/Hero_video_mob.mp4" type="video/mp4">
+                <source src="videos/Hero_video.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="hero__overlay"></div>
+
+        <div class="hero__content">
+            <h1 class="hero__title">Простір, де тіло <br class="d-br">знаходить спокій</h1>
+            <p class="hero__sub">Масаж, адаптований під ваш стан саме сьогодні. Перед кожним сеансом — Body Reading та персональний підхід</p>
+            <div class="hero__actions">
+                <a href="#cta" class="btn btn--light">Записатися<span class="btn-text-long"> на сеанс</span></a>
+                <a href="#services-cards" class="btn btn--ghost-light">Послуги</a>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- ============ PHILOSOPHY + SERVICES ============ -->
+    <section class="services" id="services">
+
+        <!-- Full-viewport philosophy header — outside .container so hands span the full screen -->
+        <div class="services__header">
+
+            <img class="hand-cover hand-cover--top"    src="images/hand.svg" alt="">
+            <img class="hand-cover hand-cover--bottom" src="images/hand.svg" alt="">
+
+            <div class="services__text">
+                <span class="eyebrow">Філософія</span>
+                <p class="services__quote">
+                    SPOKII — це взаємодія <br class="d-br">з поточним станом тіла <br class="d-br">тут і зараз
+                </p>
+                <p class="services__lead">
+                    Ми підлаштовуємо сеанс під напругу, ритм і відчуття, з якими ви прийшли сьогодні. Не шаблонна програма — а живий, уважний контакт з тілом
+                </p>
+            </div>
+
+        </div>
+
+        <div class="container">
+            <div class="services__grid" id="services-cards">
+                <div class="service-card service-card--first service-card--dark">
+                    <div class="service-card__img">
+                        <img src="images/Глибоке_ відновлення.avif" alt="Глибоке відновлення">
+                        <div class="service-card__label">
+                            <span class="service-card__index">01</span>
+                            <h3 class="service-card__name">Глибоке відновлення</h3>
+                        </div>
+                    </div>
+                    <div class="service-card__body">
+                        <p class="service-card__desc">Робота з глибокими м'язовими затисками<br class="d-br"> та загальною напругою тіла</p>
+                        <div class="service-card__prices">
+                            <div class="service-card__row">
+                                <span class="service-card__dur">60 хвилин</span>
+                                <span class="service-card__price">1&nbsp;200 грн</span>
+                            </div>
+                            <div class="service-card__row">
+                                <span class="service-card__dur">90 хвилин</span>
+                                <span class="service-card__price">1&nbsp;600 грн</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn--ghost-light sc-btn">Записатися</a>
+                    </div>
+                </div>
+                <div class="service-card service-card--dark reveal">
+                    <div class="service-card__img">
+                        <img src="images/Релакс_сеанс.avif" alt="Релакс-сеанс">
+                        <div class="service-card__label">
+                            <span class="service-card__index">02</span>
+                            <h3 class="service-card__name">Релакс-сеанс</h3>
+                        </div>
+                    </div>
+                    <div class="service-card__body">
+                        <p class="service-card__desc">М'який масаж для зниження стресу та<br class="d-br"> відновлення внутрішнього ресурсу</p>
+                        <div class="service-card__prices">
+                            <div class="service-card__row">
+                                <span class="service-card__dur">60 хвилин</span>
+                                <span class="service-card__price">1&nbsp;300 грн</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn--ghost-light sc-btn">Записатися</a>
+                    </div>
+                </div>
+                <div class="service-card service-card--dark reveal">
+                    <div class="service-card__img">
+                        <img src="images/SPOKII_signature.avif" alt="SPOKII Signature">
+                        <div class="service-card__label">
+                            <span class="service-card__index">03</span>
+                            <h3 class="service-card__name">SPOKII Signature</h3>
+                        </div>
+                    </div>
+                    <div class="service-card__body">
+                        <p class="service-card__desc">Індивідуальний сеанс за методикою<br class="d-br"> <span style="color:var(--accent)">Body Reading</span> з поєднанням технік</p>
+                        <div class="service-card__prices">
+                            <div class="service-card__row">
+                                <span class="service-card__dur">90 хвилин</span>
+                                <span class="service-card__price">2&nbsp;000 грн</span>
+                            </div>
+                        </div>
+                        <a href="#" class="btn btn--ghost-light sc-btn">Записатися</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ GALLERY ============ -->
+    <section class="gallery-section" id="gallery">
+        <div class="gallery-section__pin">
+            <div class="gallery-section__head">
+                <span class="gallery-section__eyebrow">Інтер'єр</span>
+                <h2 class="gallery-section__title">Твій простір <br class="d-br">тиші та гармонії</h2>
+            </div>
+            <div class="gallery-section__reel">
+                <div class="gallery-section__track">
+                    <div class="gallery-section__slide">
+                        <img src="images/Gallery1.avif" alt="Інтер'єр студії SPOKII">
+                    </div>
+                    <div class="gallery-section__slide">
+                        <img src="images/Gallery2.avif" alt="Інтер'єр студії SPOKII">
+                    </div>
+                    <div class="gallery-section__slide">
+                        <img src="images/Gallery3.avif" alt="Інтер'єр студії SPOKII">
+                    </div>
+                </div>
+                <button class="gallery-btn gallery-btn--prev" aria-label="Попереднє фото">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M11 4L6 9l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="gallery-btn gallery-btn--next" aria-label="Наступне фото">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M7 4l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ MASTERS ============ -->
+    <section class="masters" id="masters">
+        <div class="container">
+            <div class="masters__head">
+                <h2>Ті, хто дарують <br class="d-br">спокій</h2>
+                <p class="masters__sub">Ми не ділимо майстрів на «кращих і гірших» — у кожного свій <br class="d-br">стиль, і це дає можливість підібрати людину під людину</p>
+            </div>
+            <div class="masters__grid">
+                <div class="master-card">
+                    <div class="master-card__photo">
+                        <img src="images/АннаV2.avif" alt="Анна Ковальчук">
+                    </div>
+                    <div class="master-card__info">
+                        <div class="master-card__name">Анна Ковальчук</div>
+                        <p class="master-card__bio">Спокійна, уважна, працює м'яко і глибоко одночасно. Добре відчуває людей у стані перевтоми або стресу</p>
+                    </div>
+                </div>
+                <div class="master-card">
+                    <div class="master-card__photo">
+                        <img src="images/МаксимV2.avif" alt="Максим Руденко">
+                    </div>
+                    <div class="master-card__info">
+                        <div class="master-card__name">Максим Руденко</div>
+                        <p class="master-card__bio">Працює з глибокими м'язовими затисками. Добре розуміє тіло після спорту або довгої сидячої роботи</p>
+                    </div>
+                </div>
+                <div class="master-card">
+                    <div class="master-card__photo">
+                        <img src="images/СофіяV2.avif" alt="Софія Грищенко">
+                    </div>
+                    <div class="master-card__info">
+                        <div class="master-card__name">Софія Грищенко</div>
+                        <p class="master-card__bio">Фокус на релаксі та відновленні. Повільна робота з тілом, де важливі дихання і загальний стан</p>
+                    </div>
+                </div>
+                <div class="master-card">
+                    <div class="master-card__photo">
+                        <img src="images/АндрійV2.avif" alt="Андрій Щербина">
+                    </div>
+                    <div class="master-card__info">
+                        <div class="master-card__name">Андрій Щербина</div>
+                        <p class="master-card__bio">Баланс між техніками релаксу і глибокої роботи. Вміє перемикати тіло зі стану напруги в розслаблення</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ REVIEWS ============ -->
+    <section class="reviews" id="reviews">
+        <div class="reviews__head">
+            <span class="eyebrow">Відгуки</span>
+            <h2>Що кажуть <br class="d-br">клієнти</h2>
+        </div>
+        <div class="reviews__track-wrap" id="reviewsWrap">
+            <div class="reviews__track" id="reviewsTrack">
+                <div class="review-card">
+                    <div class="review-card__stars"><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div></div>
+                    <p class="review-card__quote">Прекрасне місце, чисто, красиво, майстер — професіонал з великої літери. Була на масажі всього тіла, такого релаксу в моєму житті ще не було. Шкіра ніби помолодшала, зійшли всі набряки, відчуття просто неймовірні</p>
+                    <div class="review-card__footer">
+                        <div class="review-card__avatar">О</div>
+                        <span class="review-card__author">Олена</span>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-card__stars"><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div></div>
+                    <p class="review-card__quote">Це було божественно! Моя голова знову змогла повертатися в сторони. На початку сеансу потрібно було відмітити зони — це дуже круто! Приємна музика і атмосфера</p>
+                    <div class="review-card__footer">
+                        <div class="review-card__avatar">М</div>
+                        <span class="review-card__author">Марина</span>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-card__stars"><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div></div>
+                    <p class="review-card__quote">Чудовий салон, ходжу вже кілька років. Хочу відзначити особливий професіоналізм адміністратора Єлизавети. Завжди швидко розуміє, що потрібно, рекомендує без зайвої нав'язливості</p>
+                    <div class="review-card__footer">
+                        <div class="review-card__avatar">Д</div>
+                        <span class="review-card__author">Дмитро</span>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-card__stars"><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div></div>
+                    <p class="review-card__quote">Пишу на чистих ендорфінах! Я в величезному захваті після відвідування. Дуже відчувається, коли до тебе торкається професіонал — самопочуття не обманеш. Тіло після — зовсім інше: легке і рухливе</p>
+                    <div class="review-card__footer">
+                        <div class="review-card__avatar">К</div>
+                        <span class="review-card__author">Катерина</span>
+                    </div>
+                </div>
+                <div class="review-card">
+                    <div class="review-card__stars"><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div><div class="review-card__star"></div></div>
+                    <p class="review-card__quote">Робила оздоровчий масаж у майстра Софії. Дуже задоволена! Справжній професіонал. Спині стало легше вже після першого сеансу. Жодних синців. Атмосфера приємна та затишна</p>
+                    <div class="review-card__footer">
+                        <div class="review-card__avatar">І</div>
+                        <span class="review-card__author">Ірина</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FINAL CTA ============ -->
+    <section class="cta-final" id="cta">
+        <div class="container">
+            <div class="cta-final__inner reveal">
+                <div class="cta-final__photo">
+                    <video autoplay muted loop playsinline poster="images/Релакс_сеанс.avif">
+                        <source src="videos/Hero_video.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="cta-final__right">
+                <h2 class="cta-final__title">Запишіться <br class="d-br">на сеанс</h2>
+                <p class="cta-final__body">Поверніть тілу стан, у якому йому легко жити, рухатись і відпочивати. Ми підберемо майстра і формат під ваш запит</p>
+                <form class="cta-form">
+                    <div class="cta-form__grid">
+                        <div class="cta-form__field">
+                            <input type="text" placeholder="Ваше ім'я">
+                        </div>
+                        <div class="cta-form__field">
+                            <input type="tel" placeholder="Телефон">
+                        </div>
+                        <div class="cta-form__field">
+                            <input type="date">
+                            <span class="cta-form__hint">Дата</span>
+                        </div>
+                        <div class="cta-form__field">
+                            <select class="cta-time-select" id="ctaTime">
+                                <option value="" disabled selected>Час</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn--light cta-form__submit">Записатися</button>
+                    <div class="cta-social">
+                        <span class="cta-social__label">або напишіть нам напряму</span>
+                        <div class="cta-social__links">
+                            <a href="#" class="cta-social__icon" aria-label="Instagram">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="cta-social__icon" aria-label="Telegram">
+                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:17px;height:17px;transform:translateX(-1px)">
+                                    <path d="M16.114,9.291c.552-.552,1.1-1.84-1.2-.276-3.268,2.255-6.489,4.372-6.489,4.372a2.7,2.7,0,0,1-2.117.046c-1.38-.414-2.991-.966-2.991-.966s-1.1-.691.783-1.427c0,0,7.961-3.267,10.722-4.418,1.058-.46,4.647-1.932,4.647-1.932s1.657-.645,1.519.92c-.046.644-.414,2.9-.782,5.338-.553,3.451-1.151,7.225-1.151,7.225s-.092,1.058-.874,1.242a3.787,3.787,0,0,1-2.3-.828c-.184-.138-3.451-2.209-4.648-3.221a.872.872,0,0,1,.046-1.473C12.939,12.375,14.918,10.488,16.114,9.291Z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__top">
+                <div>
+                    <span class="footer__brand">SPOKII</span>
+                    <p class="footer__tagline">Масажна студія у серці Києва. <br class="d-br">Поверніть тіло до стану спокою</p>
+                    <div class="footer__socials">
+                        <a href="#" class="footer__social-icon" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="footer__social-icon" aria-label="Telegram">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:15px;height:15px;transform:translateX(-1px)">
+                                <path d="M16.114,9.291c.552-.552,1.1-1.84-1.2-.276-3.268,2.255-6.489,4.372-6.489,4.372a2.7,2.7,0,0,1-2.117.046c-1.38-.414-2.991-.966-2.991-.966s-1.1-.691.783-1.427c0,0,7.961-3.267,10.722-4.418,1.058-.46,4.647-1.932,4.647-1.932s1.657-.645,1.519.92c-.046.644-.414,2.9-.782,5.338-.553,3.451-1.151,7.225-1.151,7.225s-.092,1.058-.874,1.242a3.787,3.787,0,0,1-2.3-.828c-.184-.138-3.451-2.209-4.648-3.221a.872.872,0,0,1,.046-1.473C12.939,12.375,14.918,10.488,16.114,9.291Z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <p class="footer__col-label">Навігація</p>
+                    <ul class="footer__nav">
+                        <li><a href="#services-cards">Послуги</a></li>
+                        <li><a href="#masters">Майстри</a></li>
+                        <li><a href="#gallery">Галерея</a></li>
+                        <li><a href="#reviews">Відгуки</a></li>
+                        <li><a href="#cta">Записатися</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <p class="footer__col-label">Контакти</p>
+                    <div class="footer__contacts">
+                        <div class="footer__contact-row">
+                            <a href="tel:+380973456789">+38 (097) 345 67 89</a>
+                        </div>
+                        <div class="footer__contact-row">
+                            <a href="mailto:hello@spokii.ua">hello@spokii.ua</a>
+                        </div>
+                        <div class="footer__contact-row">
+                            <span>вул. Саксаганського, 72 <br class="d-br">Київ, 01033</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <span class="footer__credit">Сайт створив: Євгеній Ніколайчук</span>
+                <span class="footer__copy">Всі права захищено © 2026</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============ SCRIPTS ============ -->
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+
+        /* ---- Remove br.d-br from plain text elements on mobile (Safari WebKit bug) ---- */
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            document.querySelectorAll('.service-card__desc .d-br, .masters__sub .d-br, address .d-br').forEach(function(br) {
+                br.remove();
+            });
+        }
+
+        /* ---- Lenis (disabled in WebView / in-app browsers) ---- */
+        const ua = navigator.userAgent || '';
+        const isWebView =
+            (/iPhone|iPad|iPod/.test(ua) && !/Safari\//.test(ua)) ||
+            (/Android/.test(ua) && /Version\//.test(ua) && !/Chrome\//.test(ua)) ||
+            /\bwv\b/.test(ua) ||
+            /FBAN|FBAV|Instagram|Telegram/.test(ua);
+
+        if (!isWebView) {
+            const lenis = new Lenis({
+                duration: 1.4,
+                easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true,
+            });
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add(time => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+        } else {
+            window.addEventListener('scroll', () => ScrollTrigger.update());
+        }
+
+        /* ---- Nav scroll state ---- */
+        ScrollTrigger.create({
+            start: 60,
+            onEnter:     () => document.getElementById('nav').classList.add('scrolled'),
+            onLeaveBack: () => document.getElementById('nav').classList.remove('scrolled'),
+        });
+
+        /* ---- Burger menu ---- */
+        (function() {
+            const burger = document.getElementById('navBurger');
+            const menu   = document.getElementById('mobileMenu');
+            if (!burger || !menu) return;
+
+            function openMenu() {
+                burger.classList.add('open');
+                menu.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMenu() {
+                burger.classList.remove('open');
+                menu.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            burger.addEventListener('click', () => {
+                burger.classList.contains('open') ? closeMenu() : openMenu();
+            });
+
+            menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+        })();
+
+        /* ---- Hero entrance ---- */
+        gsap.set('.nav', { y: '-100%', opacity: 0 });
+
+        const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.15 });
+        heroTl
+            .to('.nav',               { y: '0%', opacity: 1, duration: 1.8, ease: 'power2.out' }, 0)
+            .to('.hero__eyebrow',     { y: 0, opacity: 1, duration: 1.0 }, 0.15)
+            .fromTo('.hero__actions', { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7 }, 1.75);
+
+        /* ---- Line-split helper ---- */
+        function splitToLines(el) {
+            const html = el.innerHTML;
+            if (/<br/i.test(html)) {
+                el.innerHTML = html.split(/<br[^>]*>/i).map(seg =>
+                    `<span class="lw"><span class="li">${seg.trim()}</span></span>`
+                ).join('');
+                return [...el.querySelectorAll('.li')];
+            }
+            const words = el.textContent.trim().split(/\s+/);
+            el.innerHTML = words.map(w => `<span style="display:inline">${w}</span>`).join(' ');
+            const spans = [...el.querySelectorAll('span')];
+            const map = new Map();
+            spans.forEach(s => {
+                const top = Math.round(s.getBoundingClientRect().top);
+                if (!map.has(top)) map.set(top, []);
+                map.get(top).push(s.textContent);
+            });
+            el.innerHTML = [...map.values()].map(ws =>
+                `<span class="lw"><span class="li">${ws.join(' ')}</span></span>`
+            ).join('');
+            return [...el.querySelectorAll('.li')];
+        }
+
+        /* ---- Hero sub: line-by-line reveal ---- */
+        const subEl = document.querySelector('.hero__sub');
+        if (subEl) {
+            const subLines = splitToLines(subEl);
+            gsap.set(subLines, { y: '105%' });
+            gsap.set(subEl, { opacity: 1 });
+            gsap.to(subLines, {
+                y: '0%',
+                duration: 0.75,
+                ease: 'power3.out',
+                stagger: 0.14,
+                delay: 1.45,
+            });
+        }
+
+        /* ---- Hero title: char-by-char reveal ---- */
+        (function() {
+            const h1 = document.querySelector('.hero__title');
+            if (!h1) return;
+            const lines = h1.innerHTML.split(/<br[^>]*>/i);
+            h1.innerHTML = lines.map(line => {
+                const text = line.replace(/<[^>]+>/g, '');
+                const chars = [...text].map(ch =>
+                    ch === ' '
+                        ? '<span class="tw-s"> </span>'
+                        : `<span class="tw"><span class="tc">${ch}</span></span>`
+                ).join('');
+                return `<span class="tl">${chars}</span>`;
+            }).join('');
+
+            h1.querySelectorAll('.tl').forEach((line, li) => {
+                gsap.fromTo(line.querySelectorAll('.tc'),
+                    { y: '115%' },
+                    {
+                        y: '0%',
+                        duration: 0.82,
+                        ease: 'power3.out',
+                        stagger: 0.033,
+                        delay: 0.25 + li * 0.44,
+                    }
+                );
+            });
+        })();
+
+        /* ---- Services quote: char-by-char reveal ---- */
+        (function() {
+            const quote = document.querySelector('.services__quote');
+            if (!quote) return;
+
+            const lines = quote.innerHTML.split(/<br[^>]*>/i);
+            quote.innerHTML = lines.map(line => {
+                const text = line.replace(/<[^>]+>/g, '').trim();
+                const chars = [...text].map(ch =>
+                    ch === ' '
+                        ? '<span class="tw-s"> </span>'
+                        : `<span class="tw"><span class="tc">${ch}</span></span>`
+                ).join('');
+                return `<span class="tl">${chars}</span>`;
+            }).join('');
+
+            const lead = document.querySelector('.services__lead');
+            gsap.set(quote.querySelectorAll('.tc'), { y: '115%' });
+
+            let leadLines = null;
+            if (lead) {
+                leadLines = splitToLines(lead);
+                gsap.set(leadLines, { y: '105%' });
+            }
+
+            let played = false;
+
+            function resetQuote() {
+                played = false;
+                gsap.killTweensOf(quote.querySelectorAll('.tc'));
+                gsap.set(quote.querySelectorAll('.tc'), { y: '115%' });
+                if (leadLines) {
+                    gsap.killTweensOf(leadLines);
+                    gsap.set(leadLines, { y: '105%' });
+                }
+            }
+
+            ScrollTrigger.create({
+                trigger: '.services__header',
+                start: 'top top',
+                end: '+=200%',
+                onUpdate(self) {
+                    if (self.progress >= 0.36 && !played) {
+                        played = true;
+                        quote.querySelectorAll('.tl').forEach((line, li) => {
+                            gsap.to(line.querySelectorAll('.tc'), {
+                                y: '0%',
+                                duration: 0.82,
+                                ease: 'power3.out',
+                                stagger: 0.033,
+                                delay: li * 0.44,
+                            });
+                        });
+                        if (leadLines) gsap.to(leadLines, {
+                            y: '0%',
+                            duration: 0.75,
+                            ease: 'power3.out',
+                            stagger: 0.14,
+                            delay: 1.3,
+                        });
+                    }
+                },
+                onLeaveBack() {
+                    resetQuote();
+                }
+            });
+        })();
+
+        /* ---- Scroll reveals ---- */
+        gsap.utils.toArray('.reveal').forEach(el => {
+            gsap.to(el, {
+                y: 0,
+                opacity: 1,
+                duration: 1.1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: el,
+                    start: 'top 87%',
+                    toggleActions: 'play none none none',
+                },
+            });
+        });
+
+
+        /* ---- Hand reveal animation ---- */
+        // Exact values from Figma (frame 1440×900):
+        // Top hand:    X:911  Y:164  W:269.55  H:82.68  rotation:165°
+        // Bottom hand: X:248  Y:586  W:269.55  H:82.68  rotation:-15°
+        // Centers: top=(72.6%, 22.8%), bottom=(26.6%, 69.7%)
+
+        // Hands start already at their final angles — no rotation during animation, only translation.
+        // Top: 165° (fingers point toward center from upper-right)
+        // Bottom: -15° (fingers point toward center from lower-left)
+        // Start positions overlap tightly at center so the closed look is maintained.
+        gsap.set('.hand-cover--top', {
+            xPercent: -50, yPercent: -50,
+            left: '50%', top: '45%',
+            rotation: -15,
+        });
+        gsap.set('.hand-cover--bottom', {
+            xPercent: -50, yPercent: -50,
+            left: '50%', top: '55%',
+            rotation: 165,
+        });
+
+        const handTl = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.services__header',
+                pin: true,
+                start: 'top top',
+                end: '+=200%',
+                scrub: 1.2,
+            }
+        });
+
+        gsap.set(['.services__text .eyebrow', '.services__lead', '.services__quote'], { opacity: 0 });
+
+        handTl
+            .to('.hand-cover--top',    { left: '72.6%', top: '22.8%', rotation: 0,   ease: 'none', duration: 1 }, 0)
+            .to('.hand-cover--bottom', { left: '26.6%', top: '83%',   rotation: 180, ease: 'none', duration: 1 }, 0)
+            .to(['.services__text .eyebrow', '.services__lead', '.services__quote'], { opacity: 1, ease: 'none', duration: 0.4 }, 0.3)
+            .to('.hand-cover--top',    { left: '95%', top: '1%',   opacity: 0, ease: 'none', duration: 1 }, 1)
+            .to('.hand-cover--bottom', { left: '3%',  top: '111%', opacity: 0, ease: 'none', duration: 1 }, 1);
+
+        /* ---- First service card: top-to-bottom wipe on both columns ---- */
+        (function() {
+            const isMobileCard = window.matchMedia('(max-width: 768px)').matches;
+            const firstCard = document.querySelector('.service-card--first');
+            const imgWrap = document.querySelector('.service-card--first .service-card__img');
+            const imgEl   = document.querySelector('.service-card--first .service-card__img img');
+            const bodyEl  = document.querySelector('.service-card--first .service-card__body');
+            const descEl  = document.querySelector('.service-card--first .service-card__desc');
+            const prices  = document.querySelector('.service-card--first .service-card__prices');
+            const btn     = document.querySelector('.service-card--first .sc-btn');
+            if (!imgWrap || !imgEl) return;
+
+            gsap.set(imgEl, { scale: 1.14, transformOrigin: 'center center' });
+
+            if (isMobileCard) {
+                gsap.set(firstCard, { clipPath: 'inset(0% 0% 100% 0%)' });
+            }
+
+            let descLines = [];
+            if (descEl) {
+                descLines = splitToLines(descEl);
+                gsap.set(descLines, { y: '105%' });
+            }
+
+            ScrollTrigger.create({
+                trigger: '.service-card--first',
+                start: 'top 85%',
+                once: true,
+                onEnter() {
+                    if (isMobileCard) {
+                        gsap.timeline()
+                            .to(firstCard, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'power3.out' }, 0)
+                            .to(imgEl,     { scale: 1,                        duration: 1.25, ease: 'power2.out' }, 0)
+                            .to(descLines, { y: '0%', duration: 0.75, ease: 'power3.out', stagger: 0.12 }, 0.4)
+                            .to([prices, btn].filter(Boolean), { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 0.9);
+                    } else {
+                        gsap.timeline()
+                            .to(imgWrap,  { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'power3.out' }, 0)
+                            .to(imgEl,    { scale: 1,                        duration: 1.25, ease: 'power2.out' }, 0)
+                            .to(bodyEl,   { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.25, ease: 'power3.out' }, 0)
+                            .to(descLines, { y: '0%', duration: 0.75, ease: 'power3.out', stagger: 0.12 }, 0.35)
+                            .to([prices, btn].filter(Boolean), { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.1 }, 0.85);
+                    }
+                }
+            });
+        })();
+
+        /* ---- Service card photo parallax ---- */
+        gsap.utils.toArray('.service-card__img img').forEach(img => {
+            gsap.fromTo(img,
+                { yPercent: -7 },
+                {
+                    yPercent: 7,
+                    ease: 'none',
+                    scrollTrigger: {
+                        trigger: img.closest('.service-card__img'),
+                        start: 'top bottom',
+                        end: 'bottom top',
+                        scrub: true,
+                    }
+                }
+            );
+        });
+
+        /* ---- Gallery title: char-by-char reveal (same as hero & services) ---- */
+        (function() {
+            const galleryTitle = document.querySelector('.gallery-section__title');
+            const galleryEyebrow = document.querySelector('.gallery-section__eyebrow');
+            if (!galleryTitle) return;
+
+            // Split title into chars
+            const lines = galleryTitle.innerHTML.split(/<br[^>]*>/i);
+            galleryTitle.innerHTML = lines.map(line => {
+                const text = line.replace(/<[^>]+>/g, '');
+                const chars = [...text].map(ch =>
+                    ch === ' ' ? '<span class="tw-s"> </span>'
+                               : `<span class="tw"><span class="tc">${ch}</span></span>`
+                ).join('');
+                return `<span class="tl">${chars}</span>`;
+            }).join('');
+
+            // Hide initially
+            galleryTitle.querySelectorAll('.tc').forEach(tc => gsap.set(tc, { y: '115%' }));
+            if (galleryEyebrow) gsap.set(galleryEyebrow, { opacity: 0, y: 10 });
+
+            ScrollTrigger.create({
+                trigger: '.gallery-section',
+                start: 'top 75%',
+                once: true,
+                onEnter() {
+                    if (galleryEyebrow) gsap.to(galleryEyebrow, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+                    galleryTitle.querySelectorAll('.tl').forEach((line, li) => {
+                        gsap.to(line.querySelectorAll('.tc'), {
+                            y: '0%',
+                            duration: 0.82,
+                            ease: 'power3.out',
+                            stagger: 0.033,
+                            delay: 0.15 + li * 0.44,
+                        });
+                    });
+                }
+            });
+        })();
+
+        /* ---- Gallery section: reel slides up from below ---- */
+        (function() {
+            const pin   = document.querySelector('.gallery-section__pin');
+            const reel  = document.querySelector('.gallery-section__reel');
+            const track = document.querySelector('.gallery-section__track');
+            const title = document.querySelector('.gallery-section__title');
+            const eyebrow = document.querySelector('.gallery-section__eyebrow');
+            if (!reel || !track || !title) return;
+
+            // Infinite loop: clone first and last slides
+            const origSlides = [...track.querySelectorAll('.gallery-section__slide')];
+            const firstClone = origSlides[0].cloneNode(true);
+            const lastClone  = origSlides[origSlides.length - 1].cloneNode(true);
+            track.insertBefore(lastClone, origSlides[0]);  // [lastClone, s1, s2, s3]
+            track.appendChild(firstClone);                  // [lastClone, s1, s2, s3, firstClone]
+
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const slideW = isMobile ? window.innerWidth * 0.86 : window.innerWidth * 0.70;
+            const gap = 16;
+
+            // X position to center the slide at a given track index
+            function getX(i) {
+                return window.innerWidth / 2 - slideW / 2 - i * (slideW + gap);
+            }
+
+            let currentIndex = 2; // start on s2 (real center slide)
+            gsap.set(track, { x: getX(currentIndex) });
+
+            const prevBtn = reel.querySelector('.gallery-btn--prev');
+            const nextBtn = reel.querySelector('.gallery-btn--next');
+            let animating = false;
+
+            function goToIndex(index) {
+                if (animating) return;
+                animating = true;
+                currentIndex = index;
+                gsap.to(track, {
+                    x: getX(index),
+                    duration: 0.72,
+                    ease: 'power3.out',
+                    onComplete() {
+                        if (currentIndex === 0) {
+                            currentIndex = origSlides.length;
+                            gsap.set(track, { x: getX(currentIndex) });
+                        } else if (currentIndex === origSlides.length + 1) {
+                            currentIndex = 1;
+                            gsap.set(track, { x: getX(currentIndex) });
+                        }
+                        animating = false;
+                    }
+                });
+            }
+
+            prevBtn.addEventListener('click', () => goToIndex(currentIndex - 1));
+            nextBtn.addEventListener('click', () => goToIndex(currentIndex + 1));
+
+            if (!isMobile) {
+                gsap.set(reel, { y: '90vh', scale: 0.62, transformOrigin: 'center bottom' });
+
+                const slideH = slideW * 9 / 16;
+                const finalY = slideH / 2 - window.innerHeight / 2;
+
+                const galleryTl = gsap.timeline({
+                    scrollTrigger: {
+                        trigger: '.gallery-section',
+                        start: 'top top',
+                        end: 'bottom bottom',
+                        scrub: 1.2,
+                    }
+                });
+
+                galleryTl
+                    .to(reel, {
+                        y: finalY,
+                        scale: 1,
+                        ease: 'power2.out',
+                        duration: 1,
+                    }, 0)
+                    .to([title, eyebrow], {
+                        color: '#FAF6F0',
+                        ease: 'none',
+                        duration: 0.2,
+                    }, 0.28);
+            }
+        })();
+
+        /* ---- Masters heading: char-by-char reveal ---- */
+        (function() {
+            const h2 = document.querySelector('.masters__head h2');
+            const sub = document.querySelector('.masters__sub');
+            if (!h2) return;
+
+            const lines = h2.innerHTML.split(/<br[^>]*>/i);
+            h2.innerHTML = lines.map(line => {
+                const text = line.replace(/<[^>]+>/g, '');
+                const chars = [...text].map(ch =>
+                    ch === ' ' ? '<span class="tw-s"> </span>'
+                               : `<span class="tw"><span class="tc">${ch}</span></span>`
+                ).join('');
+                return `<span class="tl">${chars}</span>`;
+            }).join('');
+
+            gsap.set(h2.querySelectorAll('.tc'), { y: '115%' });
+
+            let subLines = null;
+            if (sub) {
+                subLines = splitToLines(sub);
+                gsap.set(subLines, { y: '105%' });
+            }
+
+            ScrollTrigger.create({
+                trigger: '.masters__head',
+                start: 'top 85%',
+                once: true,
+                onEnter() {
+                    h2.querySelectorAll('.tl').forEach((line, li) => {
+                        gsap.to(line.querySelectorAll('.tc'), {
+                            y: '0%',
+                            duration: 0.82,
+                            ease: 'power3.out',
+                            stagger: 0.033,
+                            delay: li * 0.44,
+                        });
+                    });
+                    if (subLines) gsap.to(subLines, {
+                        y: '0%',
+                        duration: 0.75,
+                        ease: 'power3.out',
+                        stagger: 0.14,
+                        delay: 0.55,
+                    });
+                }
+            });
+        })();
+
+        /* ---- Master cards: diagonal reveal + text animations ---- */
+        (function() {
+            const cards = gsap.utils.toArray('.master-card');
+
+            gsap.set(cards, { clipPath: 'inset(0% 100% 100% 0%)' });
+
+            const cardData = cards.map(card => {
+                const img      = card.querySelector('.master-card__photo img');
+                const nameEl   = card.querySelector('.master-card__name');
+                const bioEl    = card.querySelector('.master-card__bio');
+
+                if (img) gsap.set(img, { scale: 1.18, transformOrigin: 'center center' });
+
+                let nameChars = [];
+                if (nameEl) {
+                    const chars = [...nameEl.textContent.trim()].map(ch =>
+                        ch === ' ' ? '<span class="tw-s"> </span>'
+                                   : `<span class="tw"><span class="tc">${ch}</span></span>`
+                    ).join('');
+                    nameEl.innerHTML = `<span class="tl">${chars}</span>`;
+                    nameChars = [...nameEl.querySelectorAll('.tc')];
+                    gsap.set(nameChars, { y: '115%' });
+                }
+
+                let bioLines = [];
+                if (bioEl) {
+                    bioLines = splitToLines(bioEl);
+                    gsap.set(bioLines, { y: '105%' });
+                }
+
+                return { img, nameChars, bioLines };
+            });
+
+            ScrollTrigger.create({
+                trigger: '.masters__grid',
+                start: 'top 85%',
+                once: true,
+                onEnter() {
+                    const dur     = 1.4;
+                    const stagger = 0.35;
+
+                    gsap.to(cards, {
+                        clipPath: 'inset(0% 0% 0% 0%)',
+                        duration: dur,
+                        ease: 'power3.out',
+                        stagger,
+                        delay: 0.3,
+                    });
+
+                    cardData.forEach(({ img, nameChars, bioLines }, i) => {
+                        const d = 0.3 + i * stagger;
+
+                        if (img) gsap.to(img, {
+                            scale: 1, duration: dur + 0.3, ease: 'power2.out', delay: d,
+                            onComplete() {
+                                const card = img.closest('.master-card');
+                                if (!card || window.matchMedia('(hover: none)').matches) return;
+                                card.addEventListener('mouseenter', () => gsap.to(img, { scale: 1.06, duration: 0.6, ease: 'power2.out' }));
+                                card.addEventListener('mouseleave', () => gsap.to(img, { scale: 1, duration: 0.9, ease: 'power2.out' }));
+                            }
+                        });
+
+                        if (nameChars.length) gsap.to(nameChars, {
+                            y: '0%', duration: 0.65, ease: 'power3.out',
+                            stagger: 0.03, delay: d + 0.48,
+                        });
+
+                        if (bioLines.length) gsap.to(bioLines, {
+                            y: '0%', duration: 0.6, ease: 'power3.out',
+                            stagger: 0.1, delay: d + 0.78,
+                        });
+                    });
+                }
+            });
+        })();
+
+        /* ---- Reviews heading: char-by-char reveal ---- */
+        (function() {
+            const h2 = document.querySelector('.reviews__head h2');
+            const eyebrow = document.querySelector('.reviews__head .eyebrow');
+            if (!h2) return;
+
+            const lines = h2.innerHTML.split(/<br[^>]*>/i);
+            h2.innerHTML = lines.map(line => {
+                const text = line.replace(/<[^>]+>/g, '');
+                const chars = [...text].map(ch =>
+                    ch === ' ' ? '<span class="tw-s"> </span>'
+                               : `<span class="tw"><span class="tc">${ch}</span></span>`
+                ).join('');
+                return `<span class="tl">${chars}</span>`;
+            }).join('');
+
+            gsap.set(h2.querySelectorAll('.tc'), { y: '115%' });
+            if (eyebrow) gsap.set(eyebrow, { opacity: 0, y: 10 });
+
+            ScrollTrigger.create({
+                trigger: '.reviews__head',
+                start: 'top 85%',
+                once: true,
+                onEnter() {
+                    if (eyebrow) gsap.to(eyebrow, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' });
+                    h2.querySelectorAll('.tl').forEach((line, li) => {
+                        gsap.to(line.querySelectorAll('.tc'), {
+                            y: '0%',
+                            duration: 0.82,
+                            ease: 'power3.out',
+                            stagger: 0.033,
+                            delay: 0.15 + li * 0.44,
+                        });
+                    });
+                }
+            });
+        })();
+
+        /* ---- Reviews auto-scroll marquee ---- */
+        const track = document.getElementById('reviewsTrack');
+        const wrap  = document.getElementById('reviewsWrap');
+
+        if (!window.matchMedia('(max-width: 768px)').matches) {
+            let xPos = 0;
+            let paused = false;
+
+            wrap.addEventListener('mouseenter', () => paused = true);
+            wrap.addEventListener('mouseleave', () => paused = false);
+
+            Array.from(track.children).forEach(card => {
+                track.appendChild(card.cloneNode(true));
+            });
+
+            const singleWidth = track.scrollWidth / 2;
+
+            function tick() {
+                if (!paused) {
+                    xPos -= 0.6;
+                    if (Math.abs(xPos) >= singleWidth) xPos = 0;
+                    track.style.transform = `translateX(${xPos}px)`;
+                }
+                requestAnimationFrame(tick);
+            }
+            requestAnimationFrame(tick);
+        }
+
+        /* ---- CTA heading + content reveal ---- */
+        (function() {
+            const h2 = document.querySelector('.cta-final__title');
+            if (!h2) return;
+
+            const lines = h2.innerHTML.split(/<br[^>]*>/i);
+            h2.innerHTML = lines.map(line => {
+                const text = line.replace(/<[^>]+>/g, '');
+                const chars = [...text].map(ch =>
+                    ch === ' ' ? '<span class="tw-s"> </span>'
+                               : `<span class="tw"><span class="tc">${ch}</span></span>`
+                ).join('');
+                return `<span class="tl">${chars}</span>`;
+            }).join('');
+            gsap.set(h2.querySelectorAll('.tc'), { y: '115%' });
+
+            const bodyEl  = document.querySelector('.cta-final__body');
+            const fields  = document.querySelectorAll('.cta-form__field');
+            const submitBtn = document.querySelector('.cta-form__submit');
+            const social  = document.querySelector('.cta-social');
+            const photo   = document.querySelector('.cta-final__photo video, .cta-final__photo img');
+
+            let bodyLines = [];
+            if (bodyEl) { bodyLines = splitToLines(bodyEl); gsap.set(bodyLines, { y: '105%' }); }
+            if (fields.length) gsap.set(fields, { opacity: 0, y: 14 });
+            if (submitBtn) gsap.set(submitBtn, { opacity: 0, y: 10 });
+            if (social) gsap.set(social, { opacity: 0, y: 8 });
+            if (photo) gsap.set(photo, { scale: 1.1 });
+
+            ScrollTrigger.create({
+                trigger: '.cta-final',
+                start: 'top 80%',
+                once: true,
+                onEnter() {
+                    if (photo) gsap.to(photo, { scale: 1, duration: 1.6, ease: 'power2.out' });
+
+                    h2.querySelectorAll('.tl').forEach((line, li) => {
+                        gsap.to(line.querySelectorAll('.tc'), {
+                            y: '0%',
+                            duration: 0.82,
+                            ease: 'power3.out',
+                            stagger: 0.033,
+                            delay: 0.15 + li * 0.44,
+                        });
+                    });
+
+                    if (bodyLines.length) gsap.to(bodyLines, { y: '0%', duration: 0.65, ease: 'power3.out', stagger: 0.1, delay: 0.75 });
+                    if (fields.length) gsap.to(fields, { opacity: 1, y: 0, duration: 0.55, ease: 'power3.out', stagger: 0.09, delay: 1.0 });
+                    if (submitBtn) gsap.to(submitBtn, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.45 });
+                    if (social) gsap.to(social, { opacity: 1, y: 0, duration: 0.5, ease: 'power3.out', delay: 1.6 });
+                }
+            });
+        })();
+        /* ---- Time select: populate 09:00–21:00 every 30 min ---- */
+        (function() {
+            var sel = document.getElementById('ctaTime');
+            if (!sel) return;
+            for (var h = 9; h <= 21; h++) {
+                for (var m = 0; m < 60; m += 30) {
+                    if (h === 21 && m > 0) break;
+                    var t = (h < 10 ? '0' : '') + h + ':' + (m === 0 ? '00' : '30');
+                    var opt = document.createElement('option');
+                    opt.value = opt.textContent = t;
+                    sel.appendChild(opt);
+                }
+            }
+            sel.addEventListener('change', function() {
+                sel.classList.toggle('has-value', !!sel.value);
+            });
+        })();
+
+        /* ---- Date/time: open picker on any click + show value in hint ---- */
+        (function() {
+            document.querySelectorAll('.cta-form__field input[type="date"], .cta-form__field input[type="time"]').forEach(function(input) {
+                var hint = input.nextElementSibling;
+                var defaultText = hint ? hint.textContent : '';
+
+                input.addEventListener('click', function() {
+                    try { input.showPicker(); } catch(e) {}
+                });
+
+                input.addEventListener('change', function() {
+                    if (!hint) return;
+                    if (input.value) {
+                        if (input.type === 'time') {
+                            var minutes = parseInt(input.value.split(':')[0]) * 60 + parseInt(input.value.split(':')[1]);
+                            if (minutes < 9 * 60) { input.value = '09:00'; }
+                            if (minutes > 21 * 60) { input.value = '21:00'; }
+                        }
+                        if (input.type === 'date') {
+                            var p = input.value.split('-');
+                            hint.textContent = p[2] + '.' + p[1] + '.' + p[0];
+                        } else {
+                            hint.textContent = input.value;
+                        }
+                        hint.style.color = 'rgba(250,246,240,0.55)';
+                    } else {
+                        hint.textContent = defaultText;
+                        hint.style.color = '';
+                    }
+                });
+            });
+        })();
+    </script>
+
+</body>
+</html>
